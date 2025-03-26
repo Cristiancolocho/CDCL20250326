@@ -19,9 +19,24 @@ namespace CDCL20250326.AppWebMVC.Controllers
         }
 
         // GET: Warehouses
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(Warehouse bodega, int topRegistro)
         {
-            return View(await _context.Warehouses.ToListAsync());
+
+            var query = _context.Warehouses.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(bodega.WarehouseName))
+                query = query.Where(s => s.WarehouseName.Contains(bodega.WarehouseName));
+            if (topRegistro > 0)
+                query = query.Take(topRegistro);
+
+
+
+            var test20250319DbContext = _context.Warehouses.Include(p => p.WarehouseName);
+
+           
+            var warehouse = _context.Warehouses.ToList();
+            warehouse.Add(new Warehouse { WarehouseName = "SELECCIONAR", Id = 0 });
+            ViewData["WarehouseId"] = new SelectList(warehouse, "Id", "WarehouseName", 0);
+            return View(await query.ToListAsync());
         }
 
         // GET: Warehouses/Details/5
