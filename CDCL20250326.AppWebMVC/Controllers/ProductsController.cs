@@ -19,10 +19,26 @@ namespace CDCL20250326.AppWebMVC.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(Product product, int topRegistro = 10)
         {
-            var test20250326DbContext = _context.Products.Include(p => p.Brand).Include(p => p.Warehouse);
-            return View(await test20250326DbContext.ToListAsync());
+            var query = _context.Products.AsQueryable();
+            if (product.Id > 0)
+                query = query.Where(s => s.Id == product.Id);
+            if (product.Id > 0)
+                query = query.Where(s => s.Id == product.Id);
+            if (topRegistro > 0)
+                query = query.Take(topRegistro);
+
+
+            var test20250319DbContext = _context.Products.Include(p => p.Brand).Include(p => p.Warehouse);
+
+            var brands = _context.Brands.ToList();
+            brands.Add(new Brand { BrandName = "SELECCIONAR", Id = 0 });
+            var warehouse = _context.Warehouses.ToList();
+            warehouse.Add(new Warehouse { WarehouseName = "SELECCIONAR", Id = 0 });
+            ViewData["WarehouseId"] = new SelectList(warehouse, "Id", "WarehouseName", 0);
+            ViewData["BrandId"] = new SelectList(brands, "Id", "BrandName", 0);
+            return View(await query.ToListAsync());
         }
 
         // GET: Products/Details/5
