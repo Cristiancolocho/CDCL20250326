@@ -22,6 +22,8 @@ namespace CDCL20250326.AppWebMVC.Controllers
         public async Task<IActionResult> Index(Product product, int topRegistro = 10)
         {
             var query = _context.Products.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(product.ProductName))
+                query = query.Where(s => s.ProductName.Contains(product.ProductName));
             if (product.Id > 0)
                 query = query.Where(s => s.Id == product.Id);
             if (product.Id > 0)
@@ -64,8 +66,8 @@ namespace CDCL20250326.AppWebMVC.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Id");
-            ViewData["WarehouseId"] = new SelectList(_context.Warehouses, "Id", "Id");
+            ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "BrandName");
+            ViewData["WarehouseId"] = new SelectList(_context.Warehouses, "Id", "WarehouseName");
             return View();
         }
 
@@ -100,8 +102,8 @@ namespace CDCL20250326.AppWebMVC.Controllers
             {
                 return NotFound();
             }
-            ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Id", product.BrandId);
-            ViewData["WarehouseId"] = new SelectList(_context.Warehouses, "Id", "Id", product.WarehouseId);
+            ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "BrandName", product.BrandId);
+            ViewData["WarehouseId"] = new SelectList(_context.Warehouses, "Id", "WarehouseName", product.WarehouseId);
             return View(product);
         }
 
